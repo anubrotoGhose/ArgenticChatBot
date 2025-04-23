@@ -6,8 +6,20 @@ from datetime import datetime
 import google.generativeai as genai
 
 # Load environment variables
-load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# Default to None
+GEMINI_API_KEY = None
+
+# Use secrets in deployment
+# Load .env file (LOCAL DEVELOPMENT)
+if os.path.exists(".env"):
+    load_dotenv()  # Load environment variables
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# Use Streamlit Secrets (DEPLOYMENT)
+elif "GEMINI_API_KEY" in st.secrets:
+    GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+
+genai.configure(api_key=os.getenv(GEMINI_API_KEY))
 
 # Initialize the Gemini model
 model = genai.GenerativeModel('gemini-1.5-flash')
